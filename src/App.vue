@@ -1,10 +1,16 @@
 <template>
   <div id="app">
-    <Header />
+    <Header :numTotal="numTotal" :numCorrect="numCorrect" :numQuestion="index" />
     <b-container class="bv-example-row">
       <b-row>
-        <b-col sm="6" offset="3">
-          <QuestionBox v-if="questions.length" :currentQuestion="questions[index]" :next="next" />
+        <b-col md="6" offset-md="3">
+          <QuestionBox
+            v-if="questions.length"
+            :currentQuestion="questions[index]"
+            :next="next"
+            :back="back"
+            :increment="increment"
+          />
         </b-col>
       </b-row>
     </b-container>
@@ -25,15 +31,30 @@ export default {
     return {
       questions: [],
       index: 0,
+      numCorrect: 0,
+      numTotal: 0,
     };
   },
   methods: {
     next() {
-      this.index++;
+      if (this.index < 9) {
+        this.index++;
+      } else return;
+    },
+    back() {
+      if (this.index > 0) {
+        this.index--;
+      } else return;
+    },
+    increment(isCorrect) {
+      if (isCorrect) {
+        this.numCorrect++;
+      }
+      this.numTotal++;
     },
   },
   mounted: function () {
-    fetch("https://opentdb.com/api.php?amount=10&category=23&type=multiple", {
+    fetch("https://opentdb.com/api.php?amount=10&encode=url3986", {
       method: "get",
     })
       .then((response) => response.json())
@@ -50,5 +71,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+@media screen and (max-width: 576px) {
 }
 </style>
